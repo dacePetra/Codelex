@@ -20,12 +20,12 @@ class Wallet
         return $amount . " has been added to wallet." . PHP_EOL;
     }
 
-    public function subtractFromWallet(int $amount)
+    public function subtractFromWallet(int $amount):void
     {
         $this->money -= $amount;
     }
 
-    public function checkEmptyWallet()
+    public function checkEmptyWallet():void
     {
         if ($this->showWalletBalance() <= 0) {
             echo "The wallet is empty!" . PHP_EOL . "Thank you for playing!" . PHP_EOL;
@@ -52,12 +52,12 @@ class SlotMachine
     {
         return $this->letters;
     }
-    function setRowsColumns(int $rows, int $columns)
+    function setRowsColumns(int $rows, int $columns): void
     {
         $this->rows = $rows-1;
         $this->columns = $columns-1;
     }
-    function generateSpin()
+    function generateSpin(): void
     {
         foreach (range(0, $this->rows) as $row) {
             foreach (range(0, $this->columns) as $column) {

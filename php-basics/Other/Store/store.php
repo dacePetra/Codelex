@@ -1,6 +1,6 @@
 <?php
 
-$personData = explode(',', file_get_contents('/mnt/c/Users/jurgi/PhpstormProjects/php-basics/store/Daniel.txt'));
+$personData = explode(',', file_get_contents('/mnt/c/Users/jurgi/PhpstormProjects/Codelex/php-basics/Other/Store/Daniel.txt'));
 
 $person = new stdClass();
 $person->name = $personData[0];
@@ -21,7 +21,7 @@ function createProduct(string $name, int $price, string $category, string $descr
 
 $products = [];
 
-if(($handle = fopen('/mnt/c/Users/jurgi/PhpstormProjects/php-basics/store/products.csv', "r")) !== false){
+if(($handle = fopen('/mnt/c/Users/jurgi/PhpstormProjects/Codelex/php-basics/Other/Store/products.csv', "r")) !== false){
     while (($data = fgetcsv($handle, 1000, ',')) !== false){
         [$name, $price, $category, $description, $expiryDate, $amount] = $data;
         $products[] = createProduct($name, (Int) $price, $category, $description, $expiryDate, $amount);
@@ -32,8 +32,8 @@ if(($handle = fopen('/mnt/c/Users/jurgi/PhpstormProjects/php-basics/store/produc
 echo "{$person->name} has {$person->cash}$" . PHP_EOL . PHP_EOL;
 
 $basket = [];
-if (file_exists("/mnt/c/Users/jurgi/PhpstormProjects/php-basics/store/basket.txt")){
-    $basket = explode(',', file_get_contents("/mnt/c/Users/jurgi/PhpstormProjects/php-basics/store/basket.txt"));
+if (file_exists("/mnt/c/Users/jurgi/PhpstormProjects/Codelex/php-basics/Other/Store/basket.txt")){
+    $basket = explode(',', file_get_contents("/mnt/c/Users/jurgi/PhpstormProjects/Codelex/php-basics/Other/Store/basket.txt"));
 };
 
 while (true) {
@@ -89,8 +89,8 @@ while (true) {
             echo PHP_EOL;
 
             //clear file
-            if (file_exists("/mnt/c/Users/jurgi/PhpstormProjects/php-basics/store/basket.txt")){
-                unlink("/mnt/c/Users/jurgi/PhpstormProjects/php-basics/store/basket.txt");
+            if (file_exists("/mnt/c/Users/jurgi/PhpstormProjects/Codelex/php-basics/Other/Store/basket.txt")){
+                unlink("/mnt/c/Users/jurgi/PhpstormProjects/Codelex/php-basics/Other/Store/basket.txt");
             };
 
 
@@ -99,7 +99,7 @@ while (true) {
         default: //exit
             echo "Basket has been saved." . PHP_EOL;
             $productsIndexes = implode(',', $basket);
-            file_put_contents("/mnt/c/Users/jurgi/PhpstormProjects/php-basics/store/basket.txt", $productsIndexes);
+            file_put_contents("/mnt/c/Users/jurgi/PhpstormProjects/Codelex/php-basics/Other/Store/basket.txt", $productsIndexes);
             exit;
     }
 }

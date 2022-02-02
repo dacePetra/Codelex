@@ -22,7 +22,7 @@ class Player
         unset($fromPlayer->cards[$randomCardIndex]);
     }
 
-    public function disband()
+    public function disband():void
     {
         $values = [];
         foreach ($this->cards as $card) {
