@@ -4,11 +4,11 @@ class Dog
 {
     private string $name;
     private string $sex;
-    private string $mother;
-    private string $father;
+    private ?Dog $mother;
+    private ?Dog $father;
 
 
-    public function __construct(string $name, string $sex, string $mother = 'null', string $father = 'null')
+    public function __construct(string $name, string $sex, ?Dog $mother = null, ?Dog $father = null)
     {
         $this->name = $name;
         $this->sex = $sex;
@@ -16,39 +16,53 @@ class Dog
         $this->father = $father;
     }
 
-    public function getDog(): string
+    public function getName(): string
     {
-        return $this->name . ', ' . $this->sex;
+        return $this->name;
+    }
+
+    public function getSex(): string
+    {
+        return $this->sex;
     }
 
     public function fathersName(): string
     {
-        if ($this->father == 'null') {
+        if ($this->father == null) {
             return "Unknown";
-        } else {
-            return $this->father;
         }
+        return $this->father->getName();
     }
 
-    public function HasSameMotherAs(Dog $otherDog):bool
+    public function hasSameMother(Dog $otherDog):bool
     {
-        return $this->mother === $otherDog->mother;
+        return $this->mother->getName() === $otherDog->mother->getName();
     }
 
 }
 
 class DogTest
 {
-    public function Main()
+    public function main()
     {
-        $max = new Dog('Max', 'male', 'Lady', 'Rocky');
-        $rocky = new Dog('Rocky', 'male', 'Molly', 'Sam');
+        $max = new Dog('Max', 'male');
+        $rocky = new Dog('Rocky', 'male');
         $sparky = new Dog('Sparky', 'male');
-        $buster = new Dog('Buster', 'male', 'Lady', 'Sparky');
+        $buster = new Dog('Buster', 'male');
         $sam = new Dog('Sam', 'male');
         $lady = new Dog('Lady', 'female');
         $molly = new Dog('Molly', 'female');
-        $coco = new Dog('Coco', 'female', 'Molly', 'Buster');
+        $coco = new Dog('Coco', 'female');
+
+        $max = new Dog('Max', 'male', $lady, $rocky);
+        $rocky = new Dog('Rocky', 'male', $molly, $sam);
+        $sparky = new Dog('Sparky', 'male');
+        $buster = new Dog('Buster', 'male', $lady, $sparky);
+        $sam = new Dog('Sam', 'male');
+        $lady = new Dog('Lady', 'female');
+        $molly = new Dog('Molly', 'female');
+        $coco = new Dog('Coco', 'female', $molly, $buster);
+
         echo 'Coco father test: ';
         echo $coco->fathersName() == 'Buster' ? 'PASS' : 'FAIL';
         echo PHP_EOL;
@@ -56,12 +70,16 @@ class DogTest
         echo $sparky->fathersName() == 'Unknown' ? 'PASS' : 'FAIL';
         echo PHP_EOL;
         echo 'Coco father test: ';
-        echo $coco->HasSameMotherAs($rocky) == 'true' ? 'PASS' : 'FAIL';
+        echo $coco->hasSameMother($rocky) == 'true' ? 'PASS' : 'FAIL';
         echo PHP_EOL;
     }
 }
 
-(new DogTest())->Main();
+(new DogTest())->main();
+
+
+
+
 
 //Exercise #7
 //The questions in this exercise all deal with a class Dog that you have to program from scratch.
