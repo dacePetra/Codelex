@@ -9,6 +9,7 @@ class Account
     {
         $this->name = $name;
         $this->balance = $balance;
+
     }
 
     public function getName(): string
@@ -21,79 +22,241 @@ class Account
         return $this->balance;
     }
 
-    public function deposit(float $amount):void
+    public function deposit(float $amount): void
     {
         $this->balance += $amount;
     }
 
-    public function withdrawal(float $amount):void
+    public function withdrawal(float $amount): void
     {
         $this->balance -= $amount;
     }
 
-    public function transfer(Account $from, Account $to, int $howMuch):void
-    {
-        $from->withdrawal($howMuch);
-        $to->deposit($howMuch);
-
-    }
 }
 
-//Your first account
-$bartosAccount = new Account("Barto's account", 100.00);
-$bartosSwissAccount = new Account("Barto's account in Switzerland", 1000000.00);
+class AccountApplication
+{
+    private array $allAccounts;
 
-echo "Initial state:" . PHP_EOL;
-echo "Barto's account balance: " . $bartosAccount->getBalance() . PHP_EOL;
-echo "Barto's Swiss account balance: " . $bartosSwissAccount->getBalance() . PHP_EOL;
+    public function __construct(array $allAccounts = [])
+    {
+        $this->allAccounts = $allAccounts;
+    }
 
-$bartosSwissAccount->deposit(20);
-$bartosAccount->withdrawal(30);
-echo "Deposits 20 in Barto's Swiss account & withdraws 30 from Barto's account" . PHP_EOL;
+    public function getAllAccounts(): array
+    {
+        return $this->allAccounts;
+    }
 
-echo "Final state" . PHP_EOL;
-echo $bartosAccount->getBalance() . PHP_EOL;
-echo $bartosSwissAccount->getBalance() . PHP_EOL;
+    public function displayAllAccounts()
+    {
+        foreach ($this->allAccounts as $account) {
+            echo "Account '{$account->getName()}' balance: " . $account->getBalance() . PHP_EOL;
+        }
+    }
 
-echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" . PHP_EOL;
+    public function displayOneAccount(string $accountName)
+    {
+        foreach ($this->allAccounts as $account) {
+            if ($accountName === $account->getName())
+            {
+                echo "Account '{$account->getName()}' balance: " . $account->getBalance() . PHP_EOL;
+            }
+        }
+    }
 
-//Your first money transfer
+    public function run()
+    {
+        while (true) {
+            echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" . PHP_EOL;
+            echo "Choose the operation you want to perform: " . PHP_EOL;
+            echo "Choose [1] to create a new account" . PHP_EOL;
+            echo "Choose [2] to display balance of all accounts" . PHP_EOL;
+            echo "Choose [3] to withdraw money from account" . PHP_EOL;
+            echo "Choose [4] to deposit money to account" . PHP_EOL;
+            echo "Choose [5] to transfer money from one account to another account" . PHP_EOL;
+            echo "Choose [6] to exit" . PHP_EOL;
 
-$mattAccount = new Account("Matt's account", 1000);
-$myAccount = new Account("My account", 0);
+            $command = (int)readline();
 
-echo "Initial state:" . PHP_EOL;
-echo "Matt's account balance: " . $mattAccount->getBalance() . PHP_EOL;
-echo "My account balance: " . $myAccount->getBalance() . PHP_EOL;
+            switch ($command) {
+                case 1:
+                    $accountName = readline("Enter account's name: ");
+                    $accountBalance = readline("Enter account's opening balance: ");
+                    $this->addAccount($accountName, $accountBalance);
+                    echo "The account has been created successfully." . PHP_EOL;
+                    $this->displayAllAccounts();
+                    break;
+                case 2:
+                    echo "All accounts:" . PHP_EOL;
+                    $this->displayAllAccounts();
+                    break;
+                case 3:
+                    $accountName = readline("Enter account's name you want to withdraw from: ");
+                    if (!$this->accountIsRegistered($accountName))
+                    {
+                        echo "Please check the name of account. This account's name is not registered in our application." . PHP_EOL;
+                        break;
+                    }
+                    $this->displayOneAccount($accountName);
+                    $withdrawalAmount = readline("Enter the amount you would like to withdraw: ");
+                    $this->withdrawalFrom($accountName, $withdrawalAmount);
+                    $this->displayOneAccount($accountName);
+                    break;
+                case 4:
+                    $accountName = readline("Enter account's name you want to deposit to: ");
+                    if (!$this->accountIsRegistered($accountName))
+                    {
+                        echo "Please check the name of account. This account's name is not registered in our application." . PHP_EOL;
+                        break;
+                    }
+                    $this->displayOneAccount($accountName);
+                    $depositAmount = readline("Enter amount you would like to deposit: ");
+                    $this->depositTo($accountName, $depositAmount);
+                    $this->displayOneAccount($accountName);
+                    break;
+                case 5:
+                    $fromAccountName = readline("Enter account's name you want to transfer from: ");
+                    if (!$this->accountIsRegistered($fromAccountName))
+                    {
+                        echo "Please check the name of account. This account's name is not registered in our application." . PHP_EOL;
+                        break;
+                    }
+                    $toAccountName = readline("Enter account's name you want to transfer to: ");
+                    if (!$this->accountIsRegistered($toAccountName))
+                    {
+                        echo "Please check the name of account. This account's name is not registered in our application." . PHP_EOL;
+                        break;
+                    }
+                    $this->displayOneAccount($fromAccountName);
+                    $amount = readline("Enter amount you would like to transfer from '{$fromAccountName}' to '{$toAccountName}': ");
+                    $this->transfer($fromAccountName, $toAccountName, $amount);
+                    echo "The transfer has been successful." . PHP_EOL;
+                    $this->displayOneAccount($fromAccountName);
+                    break;
+                case 6:
+                    echo "Bye!" . PHP_EOL;
+                    die;
+                default:
+                    echo "Sorry, I don't understand you." . PHP_EOL;
+                    break;
+            }
+        }
+    }
 
-$mattAccount->withdrawal(100);
-$myAccount->deposit(100);
-echo "Withdraws 100.0 from Matt's account & Deposits 100.0 to My account" . PHP_EOL;
+    public function addAccount(string $name, float $balance): void
+    {
+        $this->allAccounts [] = new Account($name, $balance);
+    }
 
-echo "Final state" . PHP_EOL;
-echo "Matt's account balance: " . $mattAccount->getBalance() . PHP_EOL;
-echo "My account balance: " . $myAccount->getBalance() . PHP_EOL;
+    public function depositTo(string $accountName, float $amount): void
+    {
+        foreach ($this->allAccounts as $account) {
+            if ($account->getName() === $accountName) {
+                $account->deposit($amount);
+            }
+        }
+    }
 
-echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" . PHP_EOL;
+    public function withdrawalFrom(string $accountName, float $amount): void
+    {
+        foreach ($this->allAccounts as $account) {
+            if ($account->getName() === $accountName) {
+                $account->withdrawal($amount);
+            }
+        }
+    }
 
-//Money transfers
+    public function transfer(string $fromAccountName, string $toAccountName, float $amount): void
+    {
 
-$a = new Account("A", 100);
-$b = new Account("B", 0);
-$c = new Account("C", 0);
-echo "Initial state:" . PHP_EOL;
-echo "A account: " . $a->getBalance() . PHP_EOL;
-echo "B account: " . $b->getBalance() . PHP_EOL;
-echo "C account: " . $c->getBalance() . PHP_EOL;
+        foreach ($this->allAccounts as $account) {
+            if ($account->getName() === $fromAccountName) {
+                $account->withdrawal($amount);
+            }
+        }
+        foreach ($this->allAccounts as $account) {
+            if ($account->getName() === $toAccountName) {
+                $account->deposit($amount);
+            }
+        }
+    }
 
-$a->transfer($a, $b, 50);
-$b->transfer($b, $c, 25);
-echo "Transfers 50.0 from account A to account B & Transfers 25.0 from account B to account C" . PHP_EOL;
+    private function accountIsRegistered(string $accountName): bool
+    {
+        foreach ($this->getAllAccounts() as $account) {
+            if ($account->getName() === $accountName) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-echo "Final state" . PHP_EOL;
-echo "A account: " . $a->getBalance() . PHP_EOL;
-echo "B account: " . $b->getBalance() . PHP_EOL;
-echo "C account: " . $c->getBalance() . PHP_EOL;
+}
+
+class TestAccountApplication
+{
+    private AccountApplication $app;
+
+    public function __construct()
+    {
+        $this->app= new AccountApplication();
+    }
+
+    public function test()
+    {
+        $this->app->addAccount("Barto's", 100);
+        $this->app->addAccount("Barto's Swiss", 1000000);
+        echo "Initial state:" . PHP_EOL;
+        $this->app->displayOneAccount("Barto's");
+        $this->app->displayOneAccount("Barto's Swiss");
+        $this->app->depositTo("Barto's Swiss", 20);
+        $this->app->withdrawalFrom("Barto's", 30);
+        echo "Withdraws 30 from Barto's account & deposits 20 in Barto's Swiss account" . PHP_EOL;
+        echo "Final state:" . PHP_EOL;
+        $this->app->displayOneAccount("Barto's");
+        $this->app->displayOneAccount("Barto's Swiss");
+
+        echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" . PHP_EOL;
+
+        $this->app->addAccount("Matt's", 1000);
+        $this->app->addAccount("my", 0);
+        echo "Initial state:" . PHP_EOL;
+        $this->app->displayOneAccount("Matt's");
+        $this->app->displayOneAccount("my");
+        $this->app->depositTo("my", 100);
+        $this->app->withdrawalFrom("Matt's", 100);
+        echo "Withdraws 100.0 from Matt's account & Deposits 100.0 to My account" . PHP_EOL;
+        echo "Final state:" . PHP_EOL;
+        $this->app->displayOneAccount("Matt's");
+        $this->app->displayOneAccount("my");
+
+        echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" . PHP_EOL;
+
+        $this->app->addAccount("A", 100);
+        $this->app->addAccount("B", 0);
+        $this->app->addAccount("C", 0);
+        echo "Initial state:" . PHP_EOL;
+        $this->app->displayOneAccount("A");
+        $this->app->displayOneAccount("B");
+        $this->app->displayOneAccount("C");
+        echo "Transfers 50.0 from account A to account B & Transfers 25.0 from account B to account C" . PHP_EOL;
+        $this->app->transfer("A", "B", 50);
+        $this->app->transfer("B", "C", 25);
+        echo "Final state:" . PHP_EOL;
+        $this->app->displayOneAccount("A");
+        $this->app->displayOneAccount("B");
+        $this->app->displayOneAccount("C");
+
+    }
+
+}
+
+$app = new AccountApplication();
+$app->run();
+
+$test = new TestAccountApplication();
+$test->test();
 
 //Exercise #11
 //The object of the class Account represents a bank account that has a balance (meaning some amount of money).
