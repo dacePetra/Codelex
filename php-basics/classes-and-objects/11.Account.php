@@ -18,7 +18,7 @@ class Account
 
     public function getBalance(): float
     {
-        return $this->balance;
+        return number_format($this->balance,2); // ??? number format
     }
 
     public function deposit(float $amount): void

@@ -17,7 +17,7 @@ class AccountApplication
     public function displayAllAccounts()
     {
         foreach ($this->allAccounts as $account) {
-            echo "Account '{$account->getName()}' balance: " . $account->getBalance() . PHP_EOL;
+            echo "Account '{$account->getName()}' balance: " . $account->getBalance() . PHP_EOL; // number format
         }
     }
 
@@ -26,7 +26,7 @@ class AccountApplication
         foreach ($this->allAccounts as $account) {
             if ($accountName === $account->getName())
             {
-                echo "Account '{$account->getName()}' balance: " . $account->getBalance() . PHP_EOL;
+                echo "Account '{$account->getName()}' balance: " . number_format($account->getBalance(),2) . PHP_EOL;
             }
         }
     }

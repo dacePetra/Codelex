@@ -88,7 +88,7 @@ class Application
         $this->store->returning($title);
     }
 
-    private function listInventory()
+    private function listInventory()         // TODO ???
     {
         foreach ($this->store->getInventory() as $video) {
             echo "Title: '" . $video->getTitle() . "', average rating (1-bad, 10-awesome): " .
